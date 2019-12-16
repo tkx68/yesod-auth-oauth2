@@ -1,5 +1,5 @@
 *.cabal
-.stack-work
+.stack-work*
 
 # OAuth keys configuration for the example
 .env*

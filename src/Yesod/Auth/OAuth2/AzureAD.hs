@@ -34,9 +34,9 @@ oauth2AzureAD = oauth2AzureADScoped defaultScopes
 oauth2AzureADScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
 oauth2AzureADScoped = oauth2AzureADScopedWidget [whamlet|
         $newline never
-        <p>
-            <i .fa-fa-azure>
-            Login via Microsoft Azure AD
+        <button .btn.btn-social.btn-fill.btn-azure-ad>
+            <i .fa.fa-azure>
+            &nbsp;Login via Microsoft Azure AD
     |]
 
 oauth2AzureADScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m

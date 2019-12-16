@@ -51,9 +51,9 @@ oauth2Google = oauth2GoogleScoped defaultScopes
 oauth2GoogleScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
 oauth2GoogleScoped = oauth2GoogleScopedWidget [whamlet|
         $newline never
-        <p>
-            <i .fa-fa-google>
-            Login via Google
+        <button .btn.btn-social.btn-fill.btn-google>
+            <i .fa.fa-google>
+            &nbsp;Login via Google
     |]
 
 oauth2GoogleScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m

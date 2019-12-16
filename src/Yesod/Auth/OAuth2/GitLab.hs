@@ -26,7 +26,7 @@ defaultHost :: URI
 defaultHost = "https://gitlab.com"
 
 defaultScopes :: [Text]
-defaultScopes = ["read_user"]
+defaultScopes = ["profile", "email", "openid"]
 
 -- | Authorize with @gitlab.com@ and @[\"read_user\"]@
 --
@@ -43,9 +43,9 @@ oauth2GitLab = oauth2GitLabHostScopes defaultHost defaultScopes
 oauth2GitLabHostScopes :: YesodAuth m => URI -> [Text] -> Text -> Text -> AuthPlugin m
 oauth2GitLabHostScopes = oauth2GitLabHostScopesWidget [whamlet|
         $newline never
-        <p>
-            <i .fa-fa-gitlab>
-            Login via GitLab
+        <button .btn.btn-social.btn-fill.btn-gitlab>
+            <i .fa.fa-gitlab>
+            &nbsp;Login via GitLab
     |]
 
 oauth2GitLabHostScopesWidget :: YesodAuth m => WidgetFor m () -> URI -> [Text] -> Text -> Text -> AuthPlugin m

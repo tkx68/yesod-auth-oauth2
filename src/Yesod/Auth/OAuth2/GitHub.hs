@@ -36,9 +36,9 @@ oauth2GitHub = oauth2GitHubScoped defaultScopes
 oauth2GitHubScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
 oauth2GitHubScoped = oauth2GitHubScopedWidget [whamlet|
         $newline never
-        <p>
-            <i .fa-fa-github>
-            Login via GitHub
+        <button .btn.btn-social.btn-fill.btn-github>
+            <i .fa.fa-github>
+            &nbsp;Login via GitHub
     |]
 
 oauth2GitHubScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m
