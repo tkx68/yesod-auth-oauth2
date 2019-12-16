@@ -1,3 +1,7 @@
+## 0.6.1.3
+
+- Added a Widget version to GitHub, Google, GitLab and AzureAD (tkx68)
+
 ## [*Unreleased*](https://github.com/thoughtbot/yesod-auth-oauth2/compare/v0.6.1.2...master)
 
 None

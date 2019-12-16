@@ -1,5 +1,5 @@
 ---
-resolver: lts-13.2
+resolver: lts-14.17
 
 # Fix for weeder with stack-2
 ghc-options:

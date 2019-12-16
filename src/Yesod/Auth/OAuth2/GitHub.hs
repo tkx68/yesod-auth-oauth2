@@ -1,4 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+
 -- |
 --
 -- OAuth2 plugin for http://github.com
@@ -12,6 +14,7 @@ module Yesod.Auth.OAuth2.GitHub
     ) where
 
 import Yesod.Auth.OAuth2.Prelude
+import Yesod.Core.Widget
 
 import qualified Data.Text as T
 
@@ -31,8 +34,16 @@ oauth2GitHub :: YesodAuth m => Text -> Text -> AuthPlugin m
 oauth2GitHub = oauth2GitHubScoped defaultScopes
 
 oauth2GitHubScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
-oauth2GitHubScoped scopes clientId clientSecret =
-    authOAuth2 pluginName oauth2 $ \manager token -> do
+oauth2GitHubScoped = oauth2GitHubScopedWidget [whamlet|
+        $newline never
+        <p>
+            <i .fa-fa-github>
+            Login via GitHub
+    |]
+
+oauth2GitHubScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m
+oauth2GitHubScopedWidget w scopes clientId clientSecret =
+    authOAuth2Widget w pluginName oauth2 $ \manager token -> do
         (User userId, userResponse) <-
             authGetProfile pluginName manager token "https://api.github.com/user"
 

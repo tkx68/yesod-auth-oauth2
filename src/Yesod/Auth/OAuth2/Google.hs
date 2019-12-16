@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 -- |
 --
 -- OAuth2 plugin for http://www.google.com
@@ -29,6 +30,7 @@ module Yesod.Auth.OAuth2.Google
     ) where
 
 import Yesod.Auth.OAuth2.Prelude
+import Yesod.Core.Widget
 
 newtype User = User Text
 
@@ -47,8 +49,16 @@ oauth2Google :: YesodAuth m => Text -> Text -> AuthPlugin m
 oauth2Google = oauth2GoogleScoped defaultScopes
 
 oauth2GoogleScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
-oauth2GoogleScoped scopes clientId clientSecret =
-    authOAuth2 pluginName oauth2 $ \manager token -> do
+oauth2GoogleScoped = oauth2GoogleScopedWidget [whamlet|
+        $newline never
+        <p>
+            <i .fa-fa-google>
+            Login via Google
+    |]
+
+oauth2GoogleScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m
+oauth2GoogleScopedWidget w scopes clientId clientSecret =
+    authOAuth2Widget w pluginName oauth2 $ \manager token -> do
         (User userId, userResponse) <-
             authGetProfile pluginName manager token "https://www.googleapis.com/oauth2/v3/userinfo"
 

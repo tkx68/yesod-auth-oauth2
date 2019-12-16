@@ -1,20 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+
 module Yesod.Auth.OAuth2.GitLab
-    ( oauth2GitLab
-    , oauth2GitLabHostScopes
-    , defaultHost
-    , defaultScopes
-    ) where
+  ( oauth2GitLab
+  , oauth2GitLabHostScopes
+  , defaultHost
+  , defaultScopes
+  )
+where
 
-import Yesod.Auth.OAuth2.Prelude
+import           Yesod.Auth.OAuth2.Prelude
+import           Yesod.Core.Widget
 
-import qualified Data.Text as T
+import qualified Data.Text           as T
 
 newtype User = User Int
 
 instance FromJSON User where
-    parseJSON = withObject "User" $ \o -> User
-        <$> o .: "id"
+  parseJSON = withObject "User" $ \o -> User <$> o .: "id"
 
 pluginName :: Text
 pluginName = "gitlab"
@@ -38,23 +41,23 @@ oauth2GitLab :: YesodAuth m => Text -> Text -> AuthPlugin m
 oauth2GitLab = oauth2GitLabHostScopes defaultHost defaultScopes
 
 oauth2GitLabHostScopes :: YesodAuth m => URI -> [Text] -> Text -> Text -> AuthPlugin m
-oauth2GitLabHostScopes host scopes clientId clientSecret =
-    authOAuth2 pluginName oauth2 $ \manager token -> do
-        (User userId, userResponse) <- authGetProfile pluginName manager token
-            $ host `withPath` "/api/v4/user"
+oauth2GitLabHostScopes = oauth2GitLabHostScopesWidget [whamlet|
+        $newline never
+        <p>
+            <i .fa-fa-gitlab>
+            Login via GitLab
+    |]
 
-        pure Creds
-            { credsPlugin = pluginName
-            , credsIdent = T.pack $ show userId
-            , credsExtra = setExtra token userResponse
-            }
-  where
-    oauth2 = OAuth2
-        { oauthClientId = clientId
-        , oauthClientSecret = clientSecret
-        , oauthOAuthorizeEndpoint = host
-            `withPath` "/oauth/authorize"
-            `withQuery` [ scopeParam " " scopes ]
-        , oauthAccessTokenEndpoint = host `withPath` "/oauth/token"
-        , oauthCallback = Nothing
-        }
+oauth2GitLabHostScopesWidget :: YesodAuth m => WidgetFor m () -> URI -> [Text] -> Text -> Text -> AuthPlugin m
+oauth2GitLabHostScopesWidget w host scopes clientId clientSecret =
+  authOAuth2Widget w pluginName oauth2 $ \manager token -> do
+    (User userId, userResponse) <- authGetProfile pluginName manager token $ host `withPath` "/api/v4/user"
+
+    pure Creds { credsPlugin = pluginName, credsIdent = T.pack $ show userId, credsExtra = setExtra token userResponse }
+ where
+  oauth2 = OAuth2 { oauthClientId            = clientId
+                  , oauthClientSecret        = clientSecret
+                  , oauthOAuthorizeEndpoint  = host `withPath` "/oauth/authorize" `withQuery` [scopeParam " " scopes]
+                  , oauthAccessTokenEndpoint = host `withPath` "/oauth/token"
+                  , oauthCallback            = Nothing
+                  }

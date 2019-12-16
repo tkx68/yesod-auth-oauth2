@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 -- |
 --
 -- OAuth2 plugin for Azure AD.
@@ -13,6 +14,7 @@ module Yesod.Auth.OAuth2.AzureAD
 
 import Prelude
 import Yesod.Auth.OAuth2.Prelude
+import Yesod.Core.Widget
 
 newtype User = User Text
 
@@ -30,8 +32,16 @@ oauth2AzureAD :: YesodAuth m => Text -> Text -> AuthPlugin m
 oauth2AzureAD = oauth2AzureADScoped defaultScopes
 
 oauth2AzureADScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
-oauth2AzureADScoped scopes clientId clientSecret =
-    authOAuth2 pluginName oauth2 $ \manager token -> do
+oauth2AzureADScoped = oauth2AzureADScopedWidget [whamlet|
+        $newline never
+        <p>
+            <i .fa-fa-azure>
+            Login via Microsoft Azure AD
+    |]
+
+oauth2AzureADScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m
+oauth2AzureADScopedWidget w scopes clientId clientSecret =
+    authOAuth2Widget w pluginName oauth2 $ \manager token -> do
         (User userId, userResponse) <-
             authGetProfile pluginName manager token "https://graph.microsoft.com/v1.0/me"
 
