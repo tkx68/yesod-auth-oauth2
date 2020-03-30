@@ -55,7 +55,7 @@ oauth2GitHubScopedWidget w scopes clientId clientSecret =
   where
     oauth2 = OAuth2
         { oauthClientId = clientId
-        , oauthClientSecret = clientSecret
+        , oauthClientSecret = Just clientSecret
         , oauthOAuthorizeEndpoint = "https://github.com/login/oauth/authorize" `withQuery`
             [ scopeParam "," scopes
             ]

@@ -50,7 +50,7 @@ oauth2BitbucketScoped scopes clientId clientSecret =
   where
     oauth2 = OAuth2
         { oauthClientId = clientId
-        , oauthClientSecret = clientSecret
+        , oauthClientSecret = Just clientSecret
         , oauthOAuthorizeEndpoint = "https://bitbucket.com/site/oauth2/authorize" `withQuery`
             [ scopeParam "," scopes
             ]

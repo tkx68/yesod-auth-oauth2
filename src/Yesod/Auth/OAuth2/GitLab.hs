@@ -56,7 +56,7 @@ oauth2GitLabHostScopesWidget w host scopes clientId clientSecret =
     pure Creds { credsPlugin = pluginName, credsIdent = T.pack $ show userId, credsExtra = setExtra token userResponse }
  where
   oauth2 = OAuth2 { oauthClientId            = clientId
-                  , oauthClientSecret        = clientSecret
+                  , oauthClientSecret        = Just clientSecret
                   , oauthOAuthorizeEndpoint  = host `withPath` "/oauth/authorize" `withQuery` [scopeParam " " scopes]
                   , oauthAccessTokenEndpoint = host `withPath` "/oauth/token"
                   , oauthCallback            = Nothing

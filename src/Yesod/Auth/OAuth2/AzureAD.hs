@@ -53,7 +53,7 @@ oauth2AzureADScopedWidget w scopes clientId clientSecret =
   where
     oauth2 = OAuth2
         { oauthClientId = clientId
-        , oauthClientSecret = clientSecret
+        , oauthClientSecret = Just clientSecret
         , oauthOAuthorizeEndpoint = "https://login.windows.net/common/oauth2/authorize" `withQuery`
             [ scopeParam "," scopes
             , ("resource", "https://graph.microsoft.com")

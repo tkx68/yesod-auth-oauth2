@@ -65,7 +65,7 @@ oauth2SlackScoped scopes clientId clientSecret =
   where
     oauth2 = OAuth2
         { oauthClientId = clientId
-        , oauthClientSecret = clientSecret
+        , oauthClientSecret = Just clientSecret
         , oauthOAuthorizeEndpoint = "https://slack.com/oauth/authorize"
             `withQuery` [scopeParam "," $ map scopeText scopes]
         , oauthAccessTokenEndpoint = "https://slack.com/api/oauth.access"
