@@ -15,6 +15,9 @@ module Yesod.Auth.OAuth2.AzureAD
 import Prelude
 import Yesod.Auth.OAuth2.Prelude
 import Yesod.Core.Widget
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
+import URI.ByteString
 
 newtype User = User Text
 
@@ -28,10 +31,10 @@ pluginName = "azuread"
 defaultScopes :: [Text]
 defaultScopes = ["openid", "profile"]
 
-oauth2AzureAD :: YesodAuth m => Text -> Text -> AuthPlugin m
+oauth2AzureAD :: YesodAuth m => Text -> Text -> Text -> AuthPlugin m
 oauth2AzureAD = oauth2AzureADScoped defaultScopes
 
-oauth2AzureADScoped :: YesodAuth m => [Text] -> Text -> Text -> AuthPlugin m
+oauth2AzureADScoped :: YesodAuth m => [Text] -> Text -> Text -> Text -> AuthPlugin m
 oauth2AzureADScoped = oauth2AzureADScopedWidget [whamlet|
         $newline never
         <button .btn.btn-social.btn-fill.btn-azure-ad>
@@ -39,8 +42,12 @@ oauth2AzureADScoped = oauth2AzureADScopedWidget [whamlet|
             &nbsp;Login via Microsoft Azure AD
     |]
 
-oauth2AzureADScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> AuthPlugin m
-oauth2AzureADScopedWidget w scopes clientId clientSecret =
+fromRight :: Either a b -> b
+fromRight (Right x) = x
+fromRight (Left y) = error "Argument of fromRight is not Right but Left."
+
+oauth2AzureADScopedWidget :: YesodAuth m => WidgetFor m () -> [Text] -> Text -> Text -> Text -> AuthPlugin m
+oauth2AzureADScopedWidget w scopes clientId directoryId clientSecret =
     authOAuth2Widget w pluginName oauth2 $ \manager token -> do
         (User userId, userResponse) <-
             authGetProfile pluginName manager token "https://graph.microsoft.com/v1.0/me"
@@ -54,10 +61,10 @@ oauth2AzureADScopedWidget w scopes clientId clientSecret =
     oauth2 = OAuth2
         { oauthClientId = clientId
         , oauthClientSecret = Just clientSecret
-        , oauthOAuthorizeEndpoint = "https://login.windows.net/common/oauth2/authorize" `withQuery`
+        , oauthOAuthorizeEndpoint = (fromRight $ parseURI strictURIParserOptions (T.encodeUtf8 $ mconcat ["https://login.microsoftonline.com/", directoryId, "/oauth2/v2.0/authorize"])) `withQuery`
             [ scopeParam "," scopes
             , ("resource", "https://graph.microsoft.com")
             ]
-        , oauthAccessTokenEndpoint = "https://login.windows.net/common/oauth2/token"
+        , oauthAccessTokenEndpoint = fromRight $ parseURI strictURIParserOptions (T.encodeUtf8 $ mconcat ["https://login.microsoftonline.com/", directoryId, "/oauth2/v2.0/token"])
         , oauthCallback = Nothing
         }
