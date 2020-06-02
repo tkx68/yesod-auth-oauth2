@@ -1,5 +1,6 @@
 *.cabal
 .stack-work*
+stack.yaml.lock
 
 # OAuth keys configuration for the example
 .env*
